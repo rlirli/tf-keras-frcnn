@@ -103,7 +103,6 @@ config_output_filename = options.config_filename
 with open(config_output_filename, 'wb') as config_f:
 	pickle.dump(C,config_f)
 	print(f'Config has been written to {config_output_filename}, and can be loaded when testing to ensure correct results')
-	sys.exit()
 
 random.shuffle(train_imgs)
 
