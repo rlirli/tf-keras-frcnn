@@ -8,19 +8,20 @@ from optparse import OptionParser
 import time
 import tensorflow as tf
 from keras_frcnn import config
-from keras import backend as K
+#from keras import backend as K
 from keras.layers import Input
 from keras.models import Model
-from keras.backend.tensorflow_backend import set_session
+#from keras.backend import set_session
+from tensorflow.compat.v1.keras import backend as K
 from keras_frcnn import roi_helpers
 
 sys.setrecursionlimit(40000)
 
-config = tf.ConfigProto()
+config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 config.log_device_placement = True
-sess = tf.Session(config=config)
-set_session(sess)
+sess = tf.compat.v1.Session(config=config)
+K.set_session(sess)
 
 parser = OptionParser()
 
@@ -114,7 +115,7 @@ if C.network == 'resnet50':
 elif C.network == 'vgg':
 	num_features = 512
 
-if K.common.image_dim_ordering() == 'th':
+if K.image_data_format() == 'channels_first':
 	input_shape_img = (3, None, None)
 	input_shape_features = (num_features, None, None)
 else:
@@ -166,14 +167,14 @@ for idx, img_name in enumerate(sorted(os.listdir(img_path))):
 
 	X, ratio = format_img(img, C)
 
-	if K.common.image_dim_ordering() == 'tf':
+	if K.image_data_format() == 'channels_last':
 		X = np.transpose(X, (0, 2, 3, 1))
 
 	# get the feature maps and output from the RPN
 	[Y1, Y2, F] = model_rpn.predict(X)
 	
 
-	R = roi_helpers.rpn_to_roi(Y1, Y2, C, K.common.image_dim_ordering(), overlap_thresh=0.7)
+	R = roi_helpers.rpn_to_roi(Y1, Y2, C, K.image_data_format(), overlap_thresh=0.7)
 
 	# convert from (x1,y1,x2,y2) to (x,y,w,h)
 	R[:, 2] -= R[:, 0]
@@ -248,7 +249,7 @@ for idx, img_name in enumerate(sorted(os.listdir(img_path))):
 			cv2.rectangle(img, (textOrg[0] - 5,textOrg[1]+baseLine - 5), (textOrg[0]+retval[0] + 5, textOrg[1]-retval[1] - 5), (255, 255, 255), -1)
 			cv2.putText(img, textLabel, textOrg, cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 1)
 
-	print(f'Elapsed time = {time.time() - st)}'
+	print(f'Elapsed time = {time.time() - st}')
 	print(all_dets)
 
 	

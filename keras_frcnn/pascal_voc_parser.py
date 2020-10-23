@@ -2,6 +2,10 @@ import os
 import cv2
 import xml.etree.ElementTree as ET
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import imshow
+
+
 def get_data(input_path):
 	all_imgs = []
 
@@ -11,7 +15,7 @@ def get_data(input_path):
 
 	visualise = False
 
-	data_paths = [os.path.join(input_path,s) for s in ['VOC2007', 'VOC2012']]
+	data_paths = [os.path.join(input_path,'VOC2007')]
 	
 
 	print('Parsing annotation files')
@@ -25,13 +29,14 @@ def get_data(input_path):
 
 		trainval_files = []
 		test_files = []
+		
 		try:
 			with open(imgsets_path_trainval) as f:
 				for line in f:
 					trainval_files.append(line.strip() + '.jpg')
 		except Exception as e:
 			print(e)
-
+			
 		try:
 			with open(imgsets_path_test) as f:
 				for line in f:
@@ -56,7 +61,7 @@ def get_data(input_path):
 				element_filename = element.find('filename').text
 				element_width = int(element.find('size').find('width').text)
 				element_height = int(element.find('size').find('height').text)
-
+				print('Annotation :- ',idx)
 				if len(element_objs) > 0:
 					annotation_data = {'filepath': os.path.join(imgs_path, element_filename), 'width': element_width,
 									   'height': element_height, 'bboxes': []}
@@ -87,14 +92,20 @@ def get_data(input_path):
 					annotation_data['bboxes'].append(
 						{'class': class_name, 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'difficult': difficulty})
 				all_imgs.append(annotation_data)
-
+				if (idx == 1000):
+					break
 				if visualise:
 					img = cv2.imread(annotation_data['filepath'])
+					print('File path', annotation_data['filepath'])
+					print(img.shape)
 					for bbox in annotation_data['bboxes']:
 						cv2.rectangle(img, (bbox['x1'], bbox['y1']), (bbox[
 									  'x2'], bbox['y2']), (0, 0, 255))
-					cv2.imshow('img', img)
-					cv2.waitKey(0)
+					#cv2.imshow('img', img)
+					#cv2.waitKey(0)
+					#plt.axis("off")
+					plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+					plt.show()
 
 			except Exception as e:
 				print(e)

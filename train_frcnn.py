@@ -17,6 +17,8 @@ from keras_frcnn import losses as losses
 import keras_frcnn.roi_helpers as roi_helpers
 from keras.utils import generic_utils
 
+import matplotlib.pyplot as plt
+
 sys.setrecursionlimit(40000)
 
 parser = OptionParser()
@@ -34,7 +36,7 @@ parser.add_option("--num_epochs", type="int", dest="num_epochs", help="Number of
 parser.add_option("--config_filename", dest="config_filename", help=
 				"Location to store all the metadata related to the training (to be used when testing).",
 				default="config.pickle")
-parser.add_option("--output_weight_path", dest="output_weight_path", help="Output path for weights.", default='./model_frcnn.hdf5')
+parser.add_option("--output_weight_path", dest="output_weight_path", help="Output path for weights.", default='./Models/model_frcnn_0852.hdf5')
 parser.add_option("--input_weight_path", dest="input_weight_path", help="Input path for weights. If not specified, will try to load default weights provided by keras.")
 
 (options, args) = parser.parse_args()
@@ -81,8 +83,8 @@ else:
 	# set the path to weights based on backend and model
 	C.base_net_weights = nn.get_weight_path()
 
-train_imgs, classes_count, class_mapping = get_data(options.train_path, 'trainval')
-val_imgs, _, _ = get_data(options.train_path, 'test')
+train_imgs, classes_count, class_mapping = get_data(options.train_path)
+#val_imgs, _, _ = get_data(options.train_path, 'test')
 
 if 'bg' not in classes_count:
 	classes_count['bg'] = 0
@@ -101,6 +103,7 @@ config_output_filename = options.config_filename
 with open(config_output_filename, 'wb') as config_f:
 	pickle.dump(C,config_f)
 	print(f'Config has been written to {config_output_filename}, and can be loaded when testing to ensure correct results')
+	sys.exit()
 
 random.shuffle(train_imgs)
 
@@ -109,14 +112,14 @@ num_imgs = len(train_imgs)
 #train_imgs = [s for s in all_imgs if s['imageset'] == 'trainval']
 #val_imgs = [s for s in all_imgs if s['imageset'] == 'test']
 
-print(f'Num train samples {len(train_imgs}')
-print(f'Num val samples {len(val_imgs)}')
+print(f'Num train samples {len(train_imgs)}')
+#print(f'Num val samples {len(val_imgs)}')
 
 
-data_gen_train = data_generators.get_anchor_gt(train_imgs, classes_count, C, nn.get_img_output_length, K.common.image_dim_ordering(), mode='train')
-data_gen_val = data_generators.get_anchor_gt(val_imgs, classes_count, C, nn.get_img_output_length,K.common.image_dim_ordering(), mode='val')
+data_gen_train = data_generators.get_anchor_gt(train_imgs, classes_count, C, nn.get_img_output_length, K.image_data_format(), mode='train')
+#data_gen_val = data_generators.get_anchor_gt(val_imgs, classes_count, C, nn.get_img_output_length,K.common.image_dim_ordering(), mode='val')
 
-if K.common.image_dim_ordering() == 'th':
+if K.image_data_format() == 'channels_first':
 	input_shape_img = (3, None, None)
 else:
 	input_shape_img = (None, None, 3)
@@ -153,7 +156,7 @@ model_rpn.compile(optimizer=optimizer, loss=[losses.rpn_loss_cls(num_anchors), l
 model_classifier.compile(optimizer=optimizer_classifier, loss=[losses.class_loss_cls, losses.class_loss_regr(len(classes_count)-1)], metrics={f'dense_class_{len(classes_count)}': 'accuracy'})
 model_all.compile(optimizer='sgd', loss='mae')
 
-epoch_length = 1000
+epoch_length = 10
 num_epochs = int(options.num_epochs)
 iter_num = 0
 
@@ -190,7 +193,7 @@ for epoch_num in range(num_epochs):
 
 			P_rpn = model_rpn.predict_on_batch(X)
 
-			R = roi_helpers.rpn_to_roi(P_rpn[0], P_rpn[1], C, K.common.image_dim_ordering(), use_regr=True, overlap_thresh=0.7, max_boxes=300)
+			R = roi_helpers.rpn_to_roi(P_rpn[0], P_rpn[1], C, K.image_data_format(), use_regr=True, overlap_thresh=0.7, max_boxes=300)
 			# note: calc_iou converts from (x1,y1,x2,y2) to (x,y,w,h) format
 			X2, Y1, Y2, IouS = roi_helpers.calc_iou(R, img_data, C, class_mapping)
 
@@ -260,7 +263,7 @@ for epoch_num in range(num_epochs):
 				rpn_accuracy_for_epoch = []
 
 				if C.verbose:
-					print(f'Mean number of bounding boxes from RPN overlapping ground truth boxes: {mean_overlapping_boxes}')
+					print(f'Mean number of bounding boxes from RPN overlapping ground truth boxes: {mean_overlapping_bboxes}')
 					print(f'Classifier accuracy for bounding boxes from RPN: {class_acc}')
 					print(f'Loss RPN classifier: {loss_rpn_cls}')
 					print(f'Loss RPN regression: {loss_rpn_regr}')
@@ -276,7 +279,7 @@ for epoch_num in range(num_epochs):
 					if C.verbose:
 						print(f'Total loss decreased from {best_loss} to {curr_loss}, saving weights')
 					best_loss = curr_loss
-				model_all.save_weights(model_path_regex.group(1) + "_" + '{:04d}'.format(epoch_num) + model_path_regex.group(2))
+					model_all.save_weights(model_path_regex.group(1) + "_" + '{:04d}'.format(epoch_num) + model_path_regex.group(2))
 
 				break
 
