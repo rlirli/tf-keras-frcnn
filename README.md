@@ -1,4 +1,4 @@
-# keras-frcnn
+# keras-frcnn with Keras 2.4.3 and Tensorflow 2.3.0
 Keras implementation of Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.
 cloned from https://github.com/yhenon/keras-frcnn/
 
