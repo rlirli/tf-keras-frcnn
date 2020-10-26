@@ -46,12 +46,17 @@ paper. The anchor box sizes are [128, 256, 512] and the ratios are [1:1, 1:2, 2:
 Example output:
 
 ![alt text](https://github.com/neilsen1994/keras-frcnn-2020.updated/blob/master/results_imgs-fp-mappen-test/000002.png)
-![ex2](http://i.imgur.com/h58kCIV.png)
-![ex3](http://i.imgur.com/EbvGBaG.png)
-![ex4](http://i.imgur.com/i5UAgLb.png)
+![alt text](https://github.com/neilsen1994/keras-frcnn-2020.updated/blob/master/results_imgs-fp-mappen-test/000004.png)
+![alt text](https://github.com/neilsen1994/keras-frcnn-2020.updated/blob/master/results_imgs-fp-mappen-test/000007.png)
+![alt text](https://github.com/neilsen1994/keras-frcnn-2020.updated/blob/master/results_imgs-fp-mappen-test/000010.png)
+![alt text](https://github.com/neilsen1994/keras-frcnn-2020.updated/blob/master/results_imgs-fp-mappen-test/1.png)
+![alt text](https://github.com/neilsen1994/keras-frcnn-2020.updated/blob/master/results_imgs-fp-mappen-test/2.png)
+![alt text](https://github.com/neilsen1994/keras-frcnn-2020.updated/blob/master/results_imgs-fp-mappen-test/4.png)
+![alt text](https://github.com/neilsen1994/keras-frcnn-2020.updated/blob/master/results_imgs-fp-mappen-test/5.png)
 
 ISSUES:
 
+- I ran this code with only 1000 images and for 1755 epochs. More images will give better result.
 - If you get this error:
 `ValueError: There is a negative shape in the graph!`    
     than update keras to the newest version
