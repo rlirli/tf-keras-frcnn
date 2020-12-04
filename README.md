@@ -1,4 +1,4 @@
-# Faster RCNN with Keras (Updated code to work with current versions of Keras and TF)
+# Faster RCNN with Keras and Tensorflow (Updated code to work with current versions of Keras and TF)
 Keras implementation of Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.
 cloned from 
 
