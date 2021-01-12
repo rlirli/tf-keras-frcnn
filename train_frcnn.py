@@ -8,6 +8,8 @@ from optparse import OptionParser
 import pickle
 import re
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 from tensorflow.keras import backend as K
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop
 from tensorflow.keras.layers import Input
