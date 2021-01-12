@@ -138,7 +138,7 @@ rpn_layers = nn.rpn(shared_layers, num_anchors)
 classifier = nn.classifier(feature_map_input, roi_input, C.num_rois, nb_classes=len(class_mapping), trainable=True)
 
 model_rpn = Model(img_input, rpn_layers)
-model_classifier_only = Model([feature_map_input, roi_input], classifier)
+#model_classifier_only = Model([feature_map_input, roi_input], classifier) unnecessary as model_classifier is identical
 
 model_classifier = Model([feature_map_input, roi_input], classifier)
 
@@ -199,7 +199,7 @@ for idx, img_name in enumerate(sorted(os.listdir(img_path))):
 			ROIs_padded[0, curr_shape[1]:, :] = ROIs[0, 0, :]
 			ROIs = ROIs_padded
 
-		[P_cls, P_regr] = model_classifier_only.predict([F, ROIs])
+		[P_cls, P_regr] = model_classifier.predict([F, ROIs])
 
 		for ii in range(P_cls.shape[1]):
 
