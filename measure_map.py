@@ -8,9 +8,9 @@ import time
 import re
 from keras_frcnn import config
 import keras_frcnn.resnet as nn
-from keras import backend as K
-from keras.layers import Input
-from keras.models import Model
+from tensorflow.keras import backend as K
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Model
 from keras_frcnn import roi_helpers
 from keras_frcnn import data_generators
 from sklearn.metrics import average_precision_score

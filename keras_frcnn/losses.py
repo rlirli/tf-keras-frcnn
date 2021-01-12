@@ -1,5 +1,5 @@
-from keras import backend as K
-from keras.objectives import categorical_crossentropy
+from tensorflow.keras import backend as K
+from tensorflow.keras.losses import categorical_crossentropy
 
 if K.image_data_format() == 'channels_last':
 	import tensorflow as tf
