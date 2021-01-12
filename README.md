@@ -1,6 +1,7 @@
-# Faster RCNN with Keras and Tensorflow (Updated code to work with current versions of Keras and TF)
+# Faster RCNN with tf.Keras and Tensorflow and pretrained weights (Updated code to work with current version of TF. A pure Keras installation is not required.)
 Keras implementation of Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.
-cloned from 
+cloned from https://github.com/neilsen1994/keras-frcnn-2020.updated.git.
+pre-trained weights provided by [@VRA](https://github.com/vra/keras-frcnn) with resnet50 backbone and 1500 trained epochs.
 
 
 
